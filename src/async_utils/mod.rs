@@ -5,7 +5,7 @@ use conv::*;
 use tokio::sync::{Mutex, RwLock};
 use tokio::task::JoinHandle;
 
-#[derive(Clone)]
+#[derive(Clone, Debug)]
 pub struct JoinHandleListSelfCleaning {
     backing: Arc<Mutex<Vec<JoinHandle<()>>>>,
     clearer: Arc<Mutex<Option<JoinHandle<()>>>>,
@@ -14,7 +14,7 @@ pub struct JoinHandleListSelfCleaning {
 }
 
 impl JoinHandleListSelfCleaning {
-    async fn push(&mut self, handle: JoinHandle<()>) {
+    pub async fn push(&mut self, handle: JoinHandle<()>) {
         let mut backing = self.backing.lock().await;
 
         backing.push(handle);
@@ -56,7 +56,7 @@ impl JoinHandleListSelfCleaning {
             }
         }));
     }
-    fn new(starting_capacity: usize) -> Self {
+    pub fn new(starting_capacity: usize) -> Self {
 
         // the fact that i need to do this much type conversion is fucking ridiculus
         let check_at: u64 = {
